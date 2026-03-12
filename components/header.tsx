@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Compass } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 
@@ -22,10 +23,10 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-gold/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gold border border-gold-dark/30">
-            <span className="text-sm font-bold text-foreground">Q</span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold border border-gold-dark/30">
+            <Compass className="h-5 w-5 text-foreground" />
           </div>
-          <span className="text-lg font-semibold tracking-tight">量化笔记</span>
+          <span className="text-lg font-semibold tracking-tight">老船长量化交易</span>
         </Link>
 
         <nav className="flex items-center gap-1">

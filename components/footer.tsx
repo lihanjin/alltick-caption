@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Compass } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -7,10 +8,10 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gold border border-gold-dark/30">
-                <span className="text-sm font-bold text-foreground">Q</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gold border border-gold-dark/30">
+                <Compass className="h-5 w-5 text-foreground" />
               </div>
-              <span className="text-lg font-semibold">量化笔记</span>
+              <span className="text-lg font-semibold">老船长量化交易</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               专注于量化交易策略研究、因子投资分析、机器学习应用的技术博客。
@@ -66,7 +67,7 @@ export function Footer() {
               AllTick.co
             </a>
           </p>
-          <p>&copy; {new Date().getFullYear()} 量化笔记. 保留所有权利.</p>
+          <p>&copy; {new Date().getFullYear()} 老船长量化交易. 保留所有权利.</p>
         </div>
       </div>
     </footer>

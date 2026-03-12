@@ -1,5 +1,6 @@
 import { getAllPosts, getAllTags } from '@/lib/posts'
 import { PostList } from '@/components/post-list'
+import { AllTickAd } from '@/components/alltick-ad'
 
 export default function HomePage() {
   const posts = getAllPosts()
@@ -8,17 +9,25 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 md:py-28">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
-              老船长
-              <br />
-              <span className="text-muted-foreground">量化交易专题站</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl">
-              探索量化投资的核心策略、因子模型构建、机器学习应用，分享从理论到实盘的完整经验。
-            </p>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
+            {/* 左侧标题区域 */}
+            <div className="flex-1 max-w-2xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
+                老船长
+                <br />
+                <span className="text-muted-foreground">量化交易专题站</span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                探索量化投资的核心策略、因子模型构建、机器学习应用，分享从理论到实盘的完整经验。
+              </p>
+            </div>
+
+            {/* 右侧广告位 */}
+            <div className="lg:w-80 xl:w-96 flex-shrink-0">
+              <AllTickAd />
+            </div>
           </div>
         </div>
       </section>
