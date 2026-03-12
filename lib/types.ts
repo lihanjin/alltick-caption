@@ -37,3 +37,17 @@ export const PREDEFINED_TAGS = [
 ] as const
 
 export type PredefinedTag = (typeof PREDEFINED_TAGS)[number]
+
+export interface VisitorInfo {
+  id: string
+  timestamp: string
+  ip: string
+  country: string
+  city: string
+  device: 'desktop' | 'mobile' | 'tablet'
+  browser: string
+  os: string
+  referrer: string
+  page: string
+  userAgent: string
+}
