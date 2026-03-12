@@ -19,7 +19,7 @@ export function useAuth() {
 }
 
 // Simple password check - in production, use proper authentication
-const ADMIN_PASSWORD = 'quant2024'
+const ADMIN_PASSWORD = 'quant@2026'
 
 export function verifyPassword(password: string): boolean {
   return password === ADMIN_PASSWORD

@@ -10,6 +10,7 @@ export interface Post {
   publishedAt: string
   updatedAt: string
   readingTime: number
+  viewCount: number
 }
 
 export interface PostFormData {

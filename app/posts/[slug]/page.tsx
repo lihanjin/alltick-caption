@@ -3,8 +3,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react'
-import { getPostBySlug, getAllPosts } from '@/lib/posts'
+import { getPostBySlug, getAllPosts, getRelatedPosts } from '@/lib/posts'
 import { ArticleJsonLd } from '@/components/article-json-ld'
+import { ShareButtons } from '@/components/share-buttons'
+import { RelatedPosts } from '@/components/related-posts'
+import { ViewCounter } from '@/components/view-counter'
 
 interface PostPageProps {
   params: Promise<{ slug: string }>
@@ -56,6 +59,9 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!post) {
     notFound()
   }
+
+  const relatedPosts = getRelatedPosts(post, 5)
+  const postUrl = `https://quant-blog.vercel.app/posts/${post.slug}`
 
   const formattedDate = new Date(post.publishedAt).toLocaleDateString('zh-CN', {
     year: 'numeric',
@@ -114,7 +120,7 @@ export default async function PostPage({ params }: PostPageProps) {
                 {post.excerpt}
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pb-6 border-b border-gold/40">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <User className="h-4 w-4" />
                   {post.author}
@@ -125,8 +131,14 @@ export default async function PostPage({ params }: PostPageProps) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock className="h-4 w-4" />
-                  阅读时间 {post.readingTime} 分钟
+                  {post.readingTime} 分钟
                 </span>
+                <ViewCounter slug={post.slug} initialCount={post.viewCount} />
+              </div>
+
+              {/* 分享按钮 */}
+              <div className="flex items-center justify-between pt-4 pb-6 border-b border-gold/40">
+                <ShareButtons title={post.title} url={postUrl} />
               </div>
             </header>
 
@@ -137,8 +149,8 @@ export default async function PostPage({ params }: PostPageProps) {
 
             {/* Article Footer */}
             <footer className="mt-12 pt-8 border-t border-gold/40">
-              <div className="flex flex-col gap-4">
-                <h3 className="font-semibold">相关标签</h3>
+              {/* 分享和标签 */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
                     <Link
@@ -150,8 +162,12 @@ export default async function PostPage({ params }: PostPageProps) {
                     </Link>
                   ))}
                 </div>
+                <ShareButtons title={post.title} url={postUrl} />
               </div>
             </footer>
+
+            {/* 相关文章 */}
+            <RelatedPosts posts={relatedPosts} />
           </div>
         </article>
       </main>

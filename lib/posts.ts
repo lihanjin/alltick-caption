@@ -48,6 +48,7 @@ def mean_reversion_signal(prices, window=20, threshold=2):
     publishedAt: '2024-03-01T08:00:00Z',
     updatedAt: '2024-03-01T08:00:00Z',
     readingTime: 8,
+    viewCount: 1256,
   },
   {
     id: '2',
@@ -65,6 +66,7 @@ def mean_reversion_signal(prices, window=20, threshold=2):
     publishedAt: '2024-02-15T10:00:00Z',
     updatedAt: '2024-02-20T14:00:00Z',
     readingTime: 12,
+    viewCount: 2340,
   },
   {
     id: '3',
@@ -116,6 +118,7 @@ def calc_ic(factor, returns):
     publishedAt: '2024-01-20T09:00:00Z',
     updatedAt: '2024-01-25T16:00:00Z',
     readingTime: 15,
+    viewCount: 1892,
   },
   {
     id: '4',
@@ -161,6 +164,7 @@ def test_cointegration(series1, series2):
     publishedAt: '2024-01-10T11:00:00Z',
     updatedAt: '2024-01-10T11:00:00Z',
     readingTime: 10,
+    viewCount: 987,
   },
   {
     id: '5',
@@ -208,6 +212,7 @@ def test_cointegration(series1, series2):
     publishedAt: '2024-01-05T14:00:00Z',
     updatedAt: '2024-01-08T10:00:00Z',
     readingTime: 12,
+    viewCount: 3156,
   },
 ]
 
@@ -239,6 +244,31 @@ export function getPostsByTag(tag: string): Post[] {
   return getAllPosts().filter((post) => post.tags.includes(tag))
 }
 
+export function getRelatedPosts(currentPost: Post, limit: number = 5): Post[] {
+  const allPosts = getAllPosts()
+  
+  // 计算每篇文章与当前文章的相关度（共同标签数量）
+  const postsWithScore = allPosts
+    .filter((post) => post.id !== currentPost.id)
+    .map((post) => {
+      const commonTags = post.tags.filter((tag) => currentPost.tags.includes(tag))
+      return { post, score: commonTags.length }
+    })
+    .filter((item) => item.score > 0) // 只保留有共同标签的文章
+    .sort((a, b) => b.score - a.score) // 按相关度排序
+  
+  return postsWithScore.slice(0, limit).map((item) => item.post)
+}
+
+export function incrementViewCount(slug: string): number {
+  const post = posts.find((p) => p.slug === slug)
+  if (post) {
+    post.viewCount = (post.viewCount || 0) + 1
+    return post.viewCount
+  }
+  return 0
+}
+
 export function getAllTags(): { tag: string; count: number }[] {
   const tagCount: Record<string, number> = {}
   posts.forEach((post) => {
@@ -259,6 +289,7 @@ export function createPost(data: PostFormData): Post {
     publishedAt: now,
     updatedAt: now,
     readingTime: Math.ceil(data.content.split(/\s+/).length / 200),
+    viewCount: 0,
   }
   posts.unshift(newPost)
   return newPost

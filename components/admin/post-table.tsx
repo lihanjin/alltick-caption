@@ -21,7 +21,7 @@ interface PostTableProps {
 
 export function PostTable({ posts, onEdit, onDelete }: PostTableProps) {
   return (
-    <div className="border border-border rounded-lg overflow-hidden">
+    <div className="border border-gold/60 rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -45,7 +45,7 @@ export function PostTable({ posts, onEdit, onDelete }: PostTableProps) {
                   {post.tags.slice(0, 2).map((tag) => (
                     <span
                       key={tag}
-                      className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground"
+                      className="text-xs px-2 py-0.5 rounded-full bg-gold-light text-gold-dark border border-gold/40"
                     >
                       {tag}
                     </span>

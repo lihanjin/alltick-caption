@@ -72,10 +72,6 @@ export function LoginForm() {
             {isLoading ? '验证中...' : '登录'}
           </Button>
         </form>
-
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          提示：默认密码为 quant2024
-        </p>
       </div>
     </div>
   )
