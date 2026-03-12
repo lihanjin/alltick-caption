@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { ArrowLeft, X } from 'lucide-react'
+import { useState, useRef } from 'react'
+import Image from 'next/image'
+import { ArrowLeft, X, Upload, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -28,6 +29,66 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
   })
 
   const [tagInput, setTagInput] = useState('')
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 验证文件类型
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件')
+      return
+    }
+
+    // 验证文件大小 (最大 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('图片大小不能超过 5MB')
+      return
+    }
+
+    setIsUploading(true)
+
+    try {
+      // 创建本地预览 URL 并生成唯一文件名
+      const timestamp = Date.now()
+      const fileName = `cover-${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+      
+      // 将文件转换为 base64 存储到 localStorage 作为临时方案
+      // 实际生产环境应该上传到服务器或云存储
+      const reader = new FileReader()
+      reader.onload = () => {
+        const base64 = reader.result as string
+        // 存储到 localStorage
+        localStorage.setItem(`image_${fileName}`, base64)
+        setFormData((prev) => ({ ...prev, coverImage: `data:local:${fileName}` }))
+        setIsUploading(false)
+      }
+      reader.onerror = () => {
+        alert('图片读取失败')
+        setIsUploading(false)
+      }
+      reader.readAsDataURL(file)
+    } catch {
+      alert('图片上传失败')
+      setIsUploading(false)
+    }
+
+    // 清空 input 以便重复选择同一文件
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const getImagePreviewUrl = (coverImage: string): string => {
+    if (!coverImage) return ''
+    if (coverImage.startsWith('data:local:')) {
+      const fileName = coverImage.replace('data:local:', '')
+      return localStorage.getItem(`image_${fileName}`) || ''
+    }
+    return coverImage
+  }
 
   const generateSlug = (title: string) => {
     return title
@@ -164,15 +225,75 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                 </Field>
 
                 <Field>
-                  <FieldLabel htmlFor="coverImage">封面图片 URL</FieldLabel>
-                  <Input
-                    id="coverImage"
-                    value={formData.coverImage}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, coverImage: e.target.value }))
-                    }
-                    placeholder="/images/cover.jpg"
-                  />
+                  <FieldLabel>封面图片</FieldLabel>
+                  
+                  {/* 图片预览 */}
+                  {formData.coverImage && (
+                    <div className="relative aspect-video mb-3 rounded-lg overflow-hidden border border-gold/40 bg-gold-light">
+                      <Image
+                        src={getImagePreviewUrl(formData.coverImage)}
+                        alt="封面预览"
+                        fill
+                        className="object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, coverImage: '' }))}
+                        className="absolute top-2 right-2 p-1 rounded-full bg-background/80 hover:bg-background text-foreground transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* 上传按钮 */}
+                  <div className="flex gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="cover-upload"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="flex-1 border-gold/60 hover:border-gold hover:bg-gold-light"
+                    >
+                      {isUploading ? (
+                        <>上传中...</>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          选择图片
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* URL 输入 */}
+                  <div className="mt-3">
+                    <p className="text-xs text-muted-foreground mb-1.5">或输入图片 URL</p>
+                    <Input
+                      id="coverImage"
+                      value={formData.coverImage.startsWith('data:local:') ? '' : formData.coverImage}
+                      onChange={(e) =>
+                        setFormData((prev) => ({ ...prev, coverImage: e.target.value }))
+                      }
+                      placeholder="/images/cover.jpg"
+                      className="border-gold/60 focus:border-gold"
+                    />
+                  </div>
+
+                  {!formData.coverImage && (
+                    <div className="mt-3 aspect-video rounded-lg border-2 border-dashed border-gold/40 flex flex-col items-center justify-center text-muted-foreground bg-gold-light/30">
+                      <ImageIcon className="h-8 w-8 mb-2 opacity-50" />
+                      <p className="text-xs">暂无封面图片</p>
+                    </div>
+                  )}
                 </Field>
               </FieldGroup>
             </CardContent>
